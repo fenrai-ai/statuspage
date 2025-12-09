@@ -13,47 +13,62 @@
 		systemState = StatusCode.UNSTABLE;
 	}
 
-	let systemMessage = 'System problem';
-	switch (systemState) {
-		case StatusCode.OK:
-			systemMessage = 'All systems operational';
-			break;
-		case StatusCode.ERROR:
-			systemMessage = 'Total Outage';
-			break;
-		case StatusCode.UNSTABLE:
-			systemMessage = 'Partial outage';
-			break;
-	}
+	const statusCopy = {
+		[StatusCode.OK]: {
+			title: 'All systems operational',
+			message: 'Every monitored service is performing as expected.',
+			chip: 'border border-success/40 bg-success/10 text-success',
+			icon: '✓'
+		},
+		[StatusCode.UNSTABLE]: {
+			title: 'Partial disruption',
+			message: 'Some components are degraded while we work on a fix.',
+			chip: 'border border-warning/40 bg-warning/10 text-warning',
+			icon: '!'
+		},
+		[StatusCode.ERROR]: {
+			title: 'Major outage',
+			message: 'A critical problem is impacting multiple systems.',
+			chip: 'border border-error/40 bg-error/10 text-error',
+			icon: '×'
+		}
+	} satisfies Record<StatusCode, { title: string; message: string; chip: string; icon: string }>;
 
-	const lastUpdate = lastState.sort((a, b) => (a ? +a : 0) - (b ? +b : 0));
+	const latestUpdate = lastState
+		.filter((entry): entry is Status => Boolean(entry))
+		.sort((a, b) => +b.date - +a.date)[0];
 </script>
 
-<div class="lg:mx-20 md:my-10">
-	<div class="card bg-base-100 w-full my-8 shadow-xl">
-		<div class="card-body">
-			<div class="flex flex-col md:flex-row gap-y-4 items-center justify-between">
-				<div class="flex items-center gap-2">
-					<div
-						class="badge"
-						class:badge-success={systemState === StatusCode.OK}
-						class:badge-error={systemState === StatusCode.ERROR}
-						class:badge-warning={systemState === StatusCode.UNSTABLE}
-					>
-						{systemState === StatusCode.OK ? '✓' : systemState === StatusCode.ERROR ? '⤫' : '?'}
-					</div>
-					<h2 class="card-title">{systemMessage}</h2>
-				</div>
-				<h3 class="text-sm text-neutral-500 md:min-w-32">
-					Last update {lastUpdate[0]?.date.toLocaleDateString('en-US', {
+<div class="surface-card">
+	<div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+		<div class="space-y-3">
+			<span
+				class={`inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1 text-xs font-semibold uppercase tracking-widest ${statusCopy[systemState].chip}`}
+			>
+				<span>{statusCopy[systemState].icon}</span>
+				{statusCopy[systemState].title}
+			</span>
+			<div>
+				<h2 class="font-heading text-3xl text-white">{statusCopy[systemState].title}</h2>
+				<p class="mt-1 text-sm text-white/70">{statusCopy[systemState].message}</p>
+			</div>
+		</div>
+		<div class="space-y-2 text-sm text-white/60">
+			<p class="text-xs uppercase tracking-[0.3em] text-white/50">Last updated</p>
+			<p>
+				{#if latestUpdate}
+					{latestUpdate.date.toLocaleDateString('en-US', {
 						month: 'long',
 						day: '2-digit',
 						year: 'numeric',
 						hour: '2-digit',
 						minute: '2-digit'
 					})}
-				</h3>
-			</div>
+				{:else}
+					Awaiting first report
+				{/if}
+			</p>
+			<p class="text-xs uppercase tracking-[0.3em] text-white/50">{systems.length} services monitored</p>
 		</div>
 	</div>
 </div>

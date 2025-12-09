@@ -5,7 +5,7 @@ on:
     branches: ['main']
   workflow_dispatch:
   schedule:
-    - cron: '0 */2 * * *'
+    - cron: '30 * * * *'
   issues:
     types: [opened, closed]
 
@@ -50,12 +50,10 @@ jobs:
         run: npm start
         id: metrics
         env:
-          SOURCES: |
-            GitHub->https://github.com
-            Facebook->https://facebook.com
           GITHUB_TOKEN: ${{ github.token }}
           JOB_NAME: ${{ github.workflow }}
           ARTIFACT_NAME: ${{ env.ARTIFACT_NAME }}
+          SOURCES: ${{ secrets.SOURCES || vars.SOURCES }}
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}

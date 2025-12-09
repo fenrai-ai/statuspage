@@ -41,5 +41,9 @@
 	"type": "module",
 	"dependencies": {
 		"moment": "^2.30.1"
+	},
+	"overrides": {
+		"cookie": "^1.1.1",
+		"esbuild": "^0.27.1"
 	}
 }

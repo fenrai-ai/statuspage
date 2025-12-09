@@ -8,26 +8,26 @@
 	export let data: PageData;
 </script>
 
-<div class="w-full bg-accent header min-h-[20vh] lg:min-h-[25vh] flex items-end justify-center">
-	<div class="h-full w-full mx-2 md:mx-12">
+<section class="px-6 pb-10 pt-4">
+	<div class="mx-auto flex max-w-4xl flex-col items-center text-center gap-4">
+		<h1 class="font-heading text-4xl leading-tight text-white sm:text-5xl md:text-6xl">Fenrai status</h1>
+		<p class="text-base text-white/70 sm:text-lg">
+			Current health for all monitored Fenrai services.
+		</p>
+	</div>
+	<div class="relative mx-auto mt-12 w-full max-w-4xl">
 		<System systems={data.statusLog} />
 	</div>
-</div>
-<main class="text-center mx-4 md:mx-12 py-4">
-	<div class="max-w-3xl min-w-[50vw] mx-auto">
+</section>
+
+<main class="mx-auto w-full max-w-6xl px-6 pb-20">
+	<div class="space-y-6">
 		{#each data.statusLog as [name, siteStatus]}
 			<Status {name} statuses={siteStatus} />
 		{/each}
 		{#if data.incidents?.length > 0}
-			<div class="divider" />
+			<div class="fenrai-divider" />
 			<Incidents incidents={data.incidents} />
 		{/if}
 	</div>
 </main>
-
-<style lang="postcss">
-	.header {
-		height: 100%;
-		background: linear-gradient(180deg, theme('colors.accent') 60%, transparent 40%);
-	}
-</style>
